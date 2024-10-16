@@ -4,12 +4,12 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const { OWNER_ADDRESS, USDX_ADDRESS, PROXY_ADDRESS } = process.env;
-const contractName = 'USDX';
-// const contractName = 'wUSDM';
-const initializerArgs = ['X Protocol USD', 'USDX', OWNER_ADDRESS];
-// const initializerArgs = [USDM_ADDRESS, OWNER_ADDRESS];
-const salt = '1337';
-// const salt = '1337w';
+// const contractName = 'USDX';
+const contractName = 'wUSDX';
+// const initializerArgs = ['X Protocol USD', 'USDX', OWNER_ADDRESS];
+const initializerArgs = [USDX_ADDRESS, OWNER_ADDRESS];
+// const salt = '1337';
+const salt = '1337w';
 
 // Deploy with terminal
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
