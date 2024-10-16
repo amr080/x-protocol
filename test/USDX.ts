@@ -18,20 +18,20 @@ const roles = {
   DEFAULT_ADMIN_ROLE: ethers.constants.HashZero,
 };
 
-describe('USDM', () => {
-  const name = 'Mountain Protocol USD';
-  const symbol = 'USDM';
+describe('USDX', () => {
+  const name = 'X Protocol USD';
+  const symbol = 'USDX';
   const totalShares = parseUnits('1337');
 
   // We define a fixture to reuse the same setup in every test.
   // We use loadFixture to run this setup once, snapshot that state,
   // and reset Hardhat Network to that snapshopt in every test.
-  const deployUSDMFixture = async () => {
+  const deployUSDXFixture = async () => {
     // Contracts are deployed using the first signer/account by default
     const [owner, acc1, acc2] = await ethers.getSigners();
 
-    const USDM = await ethers.getContractFactory('USDM');
-    const contract = await upgrades.deployProxy(USDM, [name, symbol, owner.address], {
+    const USDX = await ethers.getContractFactory('USDX');
+    const contract = await upgrades.deployProxy(USDX, [name, symbol, owner.address], {
       initializer: 'initialize',
     });
 
@@ -44,62 +44,62 @@ describe('USDM', () => {
 
   describe('Deployment', () => {
     it('has a name', async () => {
-      const { contract } = await loadFixture(deployUSDMFixture);
+      const { contract } = await loadFixture(deployUSDXFixture);
 
       expect(await contract.name()).to.equal(name);
     });
 
     it('has a symbol', async () => {
-      const { contract } = await loadFixture(deployUSDMFixture);
+      const { contract } = await loadFixture(deployUSDXFixture);
 
       expect(await contract.symbol()).to.equal(symbol);
     });
 
     it('has 18 decimals', async () => {
-      const { contract } = await loadFixture(deployUSDMFixture);
+      const { contract } = await loadFixture(deployUSDXFixture);
 
       expect(await contract.decimals()).to.be.equal(18);
     });
 
     it('grants admin role to the address passed to the initializer', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       expect(await contract.hasRole(await contract.DEFAULT_ADMIN_ROLE(), owner.address)).to.equal(true);
     });
 
     it('returns the total shares', async () => {
-      const { contract } = await loadFixture(deployUSDMFixture);
+      const { contract } = await loadFixture(deployUSDXFixture);
 
       expect(await contract.totalShares()).to.equal(totalShares);
     });
 
     it('returns the total supply', async () => {
-      const { contract } = await loadFixture(deployUSDMFixture);
+      const { contract } = await loadFixture(deployUSDXFixture);
 
       // Reward multiplier is not set so totalShares === totalSupply
       expect(await contract.totalSupply()).to.equal(totalShares);
     });
 
     it('assigns the total shares to the owner', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       expect(await contract.sharesOf(owner.address)).to.equal(totalShares);
     });
 
     it('assigns the balance to the the owner', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       expect(await contract.balanceOf(owner.address)).to.equal(totalShares);
     });
 
     it('sets reward multiplier to 100%', async () => {
-      const { contract } = await loadFixture(deployUSDMFixture);
+      const { contract } = await loadFixture(deployUSDXFixture);
 
       expect(await contract.rewardMultiplier()).to.equal(parseUnits('1')); // 1 equals to 100%
     });
 
     it('fails if initialize is called again after initialization', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await expect(contract.initialize(name, symbol, owner.address)).to.be.revertedWith(
         'Initializable: contract is already initialized',
@@ -109,7 +109,7 @@ describe('USDM', () => {
 
   describe('Transfer', () => {
     it('transfers tokens from one account to another', async () => {
-      const { contract, owner, acc1, acc2 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1, acc2 } = await loadFixture(deployUSDXFixture);
       const amount = parseUnits('10');
 
       await expect(contract.transfer(acc1.address, amount)).to.changeTokenBalances(
@@ -128,7 +128,7 @@ describe('USDM', () => {
     });
 
     it('reverts when transfer amount exceeds balance', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
 
       const balance = await contract.balanceOf(owner.address);
 
@@ -138,7 +138,7 @@ describe('USDM', () => {
     });
 
     it('emits a transfer events', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
 
       const to = acc1.address;
       const amount = parseUnits('1');
@@ -147,7 +147,7 @@ describe('USDM', () => {
     });
 
     it('reverts when transfer from the zero address', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
       const signerZero = await ethers.getImpersonatedSigner(AddressZero);
 
       // Fund the zero address to pay for the transaction
@@ -162,7 +162,7 @@ describe('USDM', () => {
     });
 
     it('reverts when transfer to the zero address', async () => {
-      const { contract } = await loadFixture(deployUSDMFixture);
+      const { contract } = await loadFixture(deployUSDXFixture);
 
       const amount = parseUnits('1');
 
@@ -172,7 +172,7 @@ describe('USDM', () => {
     });
 
     it('takes tokens amount as argument but transfers shares', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const amount = parseUnits('100');
       const rewardMultiplier = parseUnits('1.0001'); // 1bps
       const sharesBeforeTransfer = await contract.sharesOf(owner.address);
@@ -189,7 +189,7 @@ describe('USDM', () => {
 
   describe('Access Control', () => {
     it('does not mint without minter role', async () => {
-      const { contract, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, acc1 } = await loadFixture(deployUSDXFixture);
 
       await expect(contract.connect(acc1).mint(acc1.address, 1000)).to.be.revertedWith(
         `AccessControl: account ${acc1.address.toLowerCase()} is missing role ${roles.MINTER}`,
@@ -197,7 +197,7 @@ describe('USDM', () => {
     });
 
     it('mints with minter role', async () => {
-      const { contract, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, acc1 } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.MINTER, acc1.address);
 
@@ -207,7 +207,7 @@ describe('USDM', () => {
     });
 
     it('does not burn without burner role', async () => {
-      const { contract, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, acc1 } = await loadFixture(deployUSDXFixture);
 
       await expect(contract.connect(acc1).burn(acc1.address, 1000)).to.be.revertedWith(
         `AccessControl: account ${acc1.address.toLowerCase()} is missing role ${roles.BURNER}`,
@@ -215,7 +215,7 @@ describe('USDM', () => {
     });
 
     it('burns with burner role', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.BURNER, owner.address);
 
@@ -225,7 +225,7 @@ describe('USDM', () => {
     });
 
     it('does not set the reward multiplier without admin role', async () => {
-      const { contract, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, acc1 } = await loadFixture(deployUSDXFixture);
 
       await expect(contract.connect(acc1).setRewardMultiplier(1)).to.be.revertedWith(
         `AccessControl: account ${acc1.address.toLowerCase()} is missing role ${roles.DEFAULT_ADMIN_ROLE}`,
@@ -233,7 +233,7 @@ describe('USDM', () => {
     });
 
     it('updates the reward multiplier with oracle role', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.ORACLE, owner.address);
 
@@ -243,7 +243,7 @@ describe('USDM', () => {
     });
 
     it('does not add a reward multiplier without oracle role', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await expect(contract.addRewardMultiplier(1)).to.be.revertedWith(
         `AccessControl: account ${owner.address.toLowerCase()} is missing role ${roles.ORACLE}`,
@@ -251,7 +251,7 @@ describe('USDM', () => {
     });
 
     it('adds a reward multiplier with oracle role', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.ORACLE, owner.address);
 
@@ -261,7 +261,7 @@ describe('USDM', () => {
     });
 
     it('does not block without blocklist role', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await expect(contract.blockAccounts([owner.address])).to.be.revertedWith(
         `AccessControl: account ${owner.address.toLowerCase()} is missing role ${roles.BLOCKLIST}`,
@@ -269,7 +269,7 @@ describe('USDM', () => {
     });
 
     it('blocks with blocklist role', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.BLOCKLIST, owner.address);
 
@@ -279,7 +279,7 @@ describe('USDM', () => {
     });
 
     it('does not unblock without blocklist role', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await expect(contract.unblockAccounts([owner.address])).to.be.revertedWith(
         `AccessControl: account ${owner.address.toLowerCase()} is missing role ${roles.BLOCKLIST}`,
@@ -287,7 +287,7 @@ describe('USDM', () => {
     });
 
     it('unblocks with blocklist role', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.BLOCKLIST, owner.address);
 
@@ -297,7 +297,7 @@ describe('USDM', () => {
     });
 
     it('pauses when pause role', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.PAUSE, owner.address);
 
@@ -307,7 +307,7 @@ describe('USDM', () => {
     });
 
     it('does not pause without pause role', async () => {
-      const { contract, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, acc1 } = await loadFixture(deployUSDXFixture);
 
       await expect(contract.connect(acc1).pause()).to.be.revertedWith(
         `AccessControl: account ${acc1.address.toLowerCase()} is missing role ${roles.PAUSE}`,
@@ -315,7 +315,7 @@ describe('USDM', () => {
     });
 
     it('unpauses when pause role', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.PAUSE, owner.address);
 
@@ -327,7 +327,7 @@ describe('USDM', () => {
     });
 
     it('does not unpause without pause role', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.PAUSE, owner.address);
       await contract.pause();
@@ -338,7 +338,7 @@ describe('USDM', () => {
     });
 
     it('does not upgrade without upgrade role', async () => {
-      const { contract, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, acc1 } = await loadFixture(deployUSDXFixture);
 
       await expect(contract.connect(acc1).upgradeTo(AddressZero)).to.be.revertedWith(
         `AccessControl: account ${acc1.address.toLowerCase()} is missing role ${roles.UPGRADE}`,
@@ -346,7 +346,7 @@ describe('USDM', () => {
     });
 
     it('upgrades with upgrade role', async () => {
-      const { contract, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, acc1 } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.UPGRADE, acc1.address);
 
@@ -358,7 +358,7 @@ describe('USDM', () => {
 
   describe('Blocklist', () => {
     it('blocks an account', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.BLOCKLIST, owner.address);
       await contract.blockAccounts([acc1.address]);
@@ -367,7 +367,7 @@ describe('USDM', () => {
     });
 
     it('blocks multiples accounts', async () => {
-      const { contract, owner, acc1, acc2 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1, acc2 } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.BLOCKLIST, owner.address);
       await contract.blockAccounts([acc1.address, acc2.address]);
@@ -378,7 +378,7 @@ describe('USDM', () => {
     });
 
     it('unblocks an account', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.BLOCKLIST, owner.address);
       await contract.blockAccounts([acc1.address]);
@@ -388,7 +388,7 @@ describe('USDM', () => {
     });
 
     it('unblocks multiples accounts', async () => {
-      const { contract, owner, acc1, acc2 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1, acc2 } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.BLOCKLIST, owner.address);
       await contract.blockAccounts([acc1.address, acc2.address]);
@@ -400,72 +400,72 @@ describe('USDM', () => {
     });
 
     it('reverts when transfering from a blocked account', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.BLOCKLIST, owner.address);
       await contract.blockAccounts([owner.address]);
 
       await expect(contract.transfer(acc1.address, 1))
-        .to.be.revertedWithCustomError(contract, 'USDMBlockedSender')
+        .to.be.revertedWithCustomError(contract, 'USDXBlockedSender')
         .withArgs(owner.address);
     });
 
     it('allows transfers to blocked accounts', async () => {
       // We only block sender not receiver, so we don't tax every user
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.BLOCKLIST, owner.address);
       await contract.blockAccounts([acc1.address]);
 
-      await expect(contract.transfer(acc1.address, 1)).to.not.be.revertedWithCustomError(contract, 'USDMBlockedSender');
+      await expect(contract.transfer(acc1.address, 1)).to.not.be.revertedWithCustomError(contract, 'USDXBlockedSender');
     });
 
     it('reverts when blocking an account already blocked', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.BLOCKLIST, owner.address);
       await contract.blockAccounts([acc1.address]);
 
       await expect(contract.blockAccounts([acc1.address]))
-        .to.be.revertedWithCustomError(contract, 'USDMInvalidBlockedAccount')
+        .to.be.revertedWithCustomError(contract, 'USDXInvalidBlockedAccount')
         .withArgs(acc1.address);
     });
 
     it('reverts when unblocking an account not blocked', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.BLOCKLIST, owner.address);
 
       await expect(contract.unblockAccounts([owner.address]))
-        .to.be.revertedWithCustomError(contract, 'USDMInvalidBlockedAccount')
+        .to.be.revertedWithCustomError(contract, 'USDXInvalidBlockedAccount')
         .withArgs(owner.address);
     });
 
     it('reverts when blocking a repeated accounts', async () => {
-      const { contract, owner, acc1, acc2 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1, acc2 } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.BLOCKLIST, owner.address);
 
       await expect(contract.blockAccounts([acc1.address, acc2.address, acc2.address]))
-        .to.be.revertedWithCustomError(contract, 'USDMInvalidBlockedAccount')
+        .to.be.revertedWithCustomError(contract, 'USDXInvalidBlockedAccount')
         .withArgs(acc2.address);
     });
 
     it('reverts when unblocking repeated accounts', async () => {
-      const { contract, owner, acc1, acc2 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1, acc2 } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.BLOCKLIST, owner.address);
       await contract.blockAccounts([acc1.address, acc2.address]);
 
       await expect(contract.unblockAccounts([acc1.address, acc2.address, acc2.address]))
-        .to.be.revertedWithCustomError(contract, 'USDMInvalidBlockedAccount')
+        .to.be.revertedWithCustomError(contract, 'USDXInvalidBlockedAccount')
         .withArgs(acc2.address);
     });
   });
 
   describe('Pause', () => {
     it('allows minting when unpaused', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const tokensAmount = parseUnits('10');
 
       await contract.grantRole(roles.MINTER, owner.address);
@@ -475,12 +475,12 @@ describe('USDM', () => {
 
       await expect(contract.mint(acc1.address, tokensAmount)).to.not.be.revertedWithCustomError(
         contract,
-        'USDMPausedTransfers',
+        'USDXPausedTransfers',
       );
     });
 
     it('does not allow minting when paused', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
       const tokensAmount = parseUnits('10');
 
       await contract.grantRole(roles.MINTER, owner.address);
@@ -489,12 +489,12 @@ describe('USDM', () => {
 
       await expect(contract.mint(owner.address, tokensAmount)).to.be.revertedWithCustomError(
         contract,
-        'USDMPausedTransfers',
+        'USDXPausedTransfers',
       );
     });
 
     it('allows burning when unpaused', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
       const tokensAmount = parseUnits('10');
 
       await contract.grantRole(roles.BURNER, owner.address);
@@ -504,12 +504,12 @@ describe('USDM', () => {
 
       await expect(contract.burn(owner.address, tokensAmount)).to.not.be.revertedWithCustomError(
         contract,
-        'USDMPausedTransfers',
+        'USDXPausedTransfers',
       );
     });
 
     it('does not allow burning when paused', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
       const tokensAmount = parseUnits('10');
 
       await contract.grantRole(roles.BURNER, owner.address);
@@ -518,12 +518,12 @@ describe('USDM', () => {
 
       await expect(contract.burn(owner.address, tokensAmount)).to.be.revertedWithCustomError(
         contract,
-        'USDMPausedTransfers',
+        'USDXPausedTransfers',
       );
     });
 
     it('allows transfers when unpaused', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const tokensAmount = parseUnits('10');
 
       await contract.grantRole(roles.PAUSE, owner.address);
@@ -532,12 +532,12 @@ describe('USDM', () => {
 
       await expect(contract.transfer(acc1.address, tokensAmount)).to.not.be.revertedWithCustomError(
         contract,
-        'USDMPausedTransfers',
+        'USDXPausedTransfers',
       );
     });
 
     it('does not allow transfers when paused', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const tokensAmount = parseUnits('10');
 
       await contract.grantRole(roles.PAUSE, owner.address);
@@ -545,7 +545,7 @@ describe('USDM', () => {
 
       await expect(contract.transfer(acc1.address, tokensAmount)).to.be.revertedWithCustomError(
         contract,
-        'USDMPausedTransfers',
+        'USDXPausedTransfers',
       );
     });
   });
@@ -559,17 +559,17 @@ describe('USDM', () => {
     };
 
     it('does not support adding a reward multiplier lower than zero', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.ORACLE, owner.address);
 
       await expect(contract.addRewardMultiplier(0))
-        .to.be.revertedWithCustomError(contract, 'USDMInvalidRewardMultiplier')
+        .to.be.revertedWithCustomError(contract, 'USDXInvalidRewardMultiplier')
         .withArgs(0);
     });
 
     it('adds a reward multiplier and emits event with the new value', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.ORACLE, owner.address);
 
@@ -585,7 +585,7 @@ describe('USDM', () => {
     });
 
     it('sets the reward multiplier', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.ORACLE, owner.address);
 
@@ -599,19 +599,19 @@ describe('USDM', () => {
     });
 
     it('does not support setting a reward multiplier below one', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.ORACLE, owner.address);
 
       const rewardMultiplier = parseUnits('0.99999'); // 1 equals to 100%
 
       await expect(contract.setRewardMultiplier(rewardMultiplier))
-        .to.be.revertedWithCustomError(contract, 'USDMInvalidRewardMultiplier')
+        .to.be.revertedWithCustomError(contract, 'USDXInvalidRewardMultiplier')
         .withArgs(rewardMultiplier);
     });
 
     it('updates the total supply according to the new reward multiplier', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
       const rewardMultiplier = parseUnits('1.0001');
 
       await contract.grantRole(roles.ORACLE, owner.address);
@@ -626,13 +626,13 @@ describe('USDM', () => {
     });
 
     it('mints by tokens amount not by shares', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const rewardMultiplierIncrement = parseUnits('0.0004'); // 4bps
 
       await contract.grantRole(roles.ORACLE, owner.address);
       await contract.grantRole(roles.MINTER, owner.address);
 
-      const amount = parseUnits('1000'); // 1k USDM
+      const amount = parseUnits('1000'); // 1k USDX
 
       await contract.mint(acc1.address, amount); // Mint 1k
       await contract.addRewardMultiplier(rewardMultiplierIncrement);
@@ -643,19 +643,19 @@ describe('USDM', () => {
     });
 
     it('mints accurately over an extended period', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.ORACLE, owner.address);
       await contract.grantRole(roles.MINTER, owner.address);
 
       // Absurd worst case scenario is used to test the decimal accuracy of the contract
-      // Mint 1 USDM and set 4bps as reward multiplier everyday for 5 years
+      // Mint 1 USDX and set 4bps as reward multiplier everyday for 5 years
       const rewardMultiplierIncrement = parseUnits('0.001'); // 10bps
-      const amount = parseUnits('1'); // 1 USDM
+      const amount = parseUnits('1'); // 1 USDX
       const DAYS_IN_FIVE_YEARS = 365 * 5; // 5 years
 
       for (let i = 0; i < DAYS_IN_FIVE_YEARS; i++) {
-        await contract.mint(acc1.address, amount); // Mint 1 USDM
+        await contract.mint(acc1.address, amount); // Mint 1 USDX
         await contract.addRewardMultiplier(rewardMultiplierIncrement);
       }
 
@@ -677,7 +677,7 @@ describe('USDM', () => {
 
   describe('Balance', () => {
     it('returns the amount of tokens, not shares', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const tokensAmount = parseUnits('10');
       const rewardMultiplier = parseUnits('1.0001');
 
@@ -692,14 +692,14 @@ describe('USDM', () => {
 
   describe('Shares', () => {
     it('has zero balance and shares for new accounts', async () => {
-      const { contract, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, acc1 } = await loadFixture(deployUSDXFixture);
 
       expect(await contract.balanceOf(acc1.address)).to.equal(0);
       expect(await contract.sharesOf(acc1.address)).to.equal(0);
     });
 
     it('does not change amount of shares when updating the reward multiplier', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
 
       const sharesAmount = parseUnits('1');
 
@@ -713,7 +713,7 @@ describe('USDM', () => {
     });
 
     it('returns the amount of shares based on tokens', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
       const amount = parseUnits('14');
       const rewardMultiplier = parseUnits('1.0001');
 
@@ -727,7 +727,7 @@ describe('USDM', () => {
     });
 
     it('returns the amount of tokens based on shares', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
       const shares = parseUnits('14');
       const rewardMultiplier = parseUnits('1.0001');
 
@@ -743,7 +743,7 @@ describe('USDM', () => {
 
   describe('Mint', () => {
     it('increments total shares', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.MINTER, owner.address);
 
@@ -756,7 +756,7 @@ describe('USDM', () => {
     });
 
     it('increments total supply', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.MINTER, owner.address);
 
@@ -769,7 +769,7 @@ describe('USDM', () => {
     });
 
     it('emits a transfer event', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.MINTER, owner.address);
 
@@ -781,7 +781,7 @@ describe('USDM', () => {
     });
 
     it('emits a transfer event with amount of tokens not shares', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.MINTER, owner.address);
       await contract.grantRole(roles.ORACLE, owner.address);
@@ -796,7 +796,7 @@ describe('USDM', () => {
     });
 
     it('mints shares to correct address', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.MINTER, owner.address);
 
@@ -808,21 +808,21 @@ describe('USDM', () => {
     });
 
     it('does not allow minting to null address', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.MINTER, owner.address);
 
       const amount = parseUnits('1');
 
       await expect(contract.mint(AddressZero, amount))
-        .to.be.revertedWithCustomError(contract, 'USDMInvalidMintReceiver')
+        .to.be.revertedWithCustomError(contract, 'USDXInvalidMintReceiver')
         .withArgs(AddressZero);
     });
   });
 
   describe('Burn', () => {
     it('decrements account shares', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.BURNER, owner.address);
 
@@ -835,7 +835,7 @@ describe('USDM', () => {
     });
 
     it('decrements total shares quantity', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.BURNER, owner.address);
 
@@ -848,28 +848,28 @@ describe('USDM', () => {
     });
 
     it('does not allow burning from null address', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.BURNER, owner.address);
 
       await expect(contract.burn(AddressZero, 1))
-        .to.be.revertedWithCustomError(contract, 'USDMInvalidBurnSender')
+        .to.be.revertedWithCustomError(contract, 'USDXInvalidBurnSender')
         .withArgs(AddressZero);
     });
 
     it('does not allow burning when amount exceeds balance', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.BURNER, owner.address);
       const balance = await contract.balanceOf(owner.address);
 
       await expect(contract.burn(owner.address, balance.add(1)))
-        .to.be.revertedWithCustomError(contract, 'USDMInsufficientBurnBalance')
+        .to.be.revertedWithCustomError(contract, 'USDXInsufficientBurnBalance')
         .withArgs(owner.address, balance, balance.add(1));
     });
 
     it('emits a transfer events', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
       const amount = 1;
 
       await contract.grantRole(roles.BURNER, owner.address);
@@ -881,7 +881,7 @@ describe('USDM', () => {
     });
 
     it('emits a transfer event with amount of tokens not shares', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
 
       await contract.grantRole(roles.BURNER, owner.address);
       await contract.grantRole(roles.ORACLE, owner.address);
@@ -898,7 +898,7 @@ describe('USDM', () => {
 
   describe('Approve', () => {
     it('reverts when owner is the zero address', async () => {
-      const { contract, owner } = await loadFixture(deployUSDMFixture);
+      const { contract, owner } = await loadFixture(deployUSDXFixture);
       const signerZero = await ethers.getImpersonatedSigner(AddressZero);
 
       // Fund the zero address to pay for the transaction
@@ -913,7 +913,7 @@ describe('USDM', () => {
     });
 
     it('reverts when spender is the zero address', async () => {
-      const { contract } = await loadFixture(deployUSDMFixture);
+      const { contract } = await loadFixture(deployUSDXFixture);
 
       await expect(contract.approve(AddressZero, 1))
         .to.revertedWithCustomError(contract, 'ERC20InvalidSpender')
@@ -921,7 +921,7 @@ describe('USDM', () => {
     });
 
     it('emits an approval event', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const amount = 1;
 
       await expect(contract.approve(acc1.address, amount))
@@ -930,7 +930,7 @@ describe('USDM', () => {
     });
 
     it('approves the request amount', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const amount = 1;
 
       await contract.approve(acc1.address, amount);
@@ -939,7 +939,7 @@ describe('USDM', () => {
     });
 
     it('approves the request amount and replace the previous one', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const amount = 1;
 
       await contract.approve(acc1.address, amount + 1);
@@ -951,7 +951,7 @@ describe('USDM', () => {
 
   describe('Increase Allowance', () => {
     it('approves the requested amount', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const amount = 1;
 
       await contract.increaseAllowance(acc1.address, amount);
@@ -960,7 +960,7 @@ describe('USDM', () => {
     });
 
     it('increases the spender allowance adding the requested amount', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const amount = 1;
 
       await contract.approve(acc1.address, amount);
@@ -970,7 +970,7 @@ describe('USDM', () => {
     });
 
     it('emits an approval event', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const amount = 1;
 
       await expect(await contract.increaseAllowance(acc1.address, amount))
@@ -979,7 +979,7 @@ describe('USDM', () => {
     });
 
     it('reverts when spender is the zero address', async () => {
-      const { contract } = await loadFixture(deployUSDMFixture);
+      const { contract } = await loadFixture(deployUSDXFixture);
       const amount = 1;
 
       await expect(contract.increaseAllowance(AddressZero, amount))
@@ -990,7 +990,7 @@ describe('USDM', () => {
 
   describe('Decrease Allowance', () => {
     it('reverts when there was no approved amount before decreasing', async () => {
-      const { contract, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, acc1 } = await loadFixture(deployUSDXFixture);
 
       await expect(contract.decreaseAllowance(acc1.address, 1))
         .to.be.revertedWithCustomError(contract, 'ERC20InsufficientAllowance')
@@ -998,7 +998,7 @@ describe('USDM', () => {
     });
 
     it('decreases the spender allowance substracting the requested amount', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const spender = acc1.address;
       const amount = 2;
       const subtractedAmount = 1;
@@ -1010,7 +1010,7 @@ describe('USDM', () => {
     });
 
     it('sets allowance to zero when all allowance is removed', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const spender = acc1.address;
       const amount = 1;
       const subtractedAmount = 1;
@@ -1022,7 +1022,7 @@ describe('USDM', () => {
     });
 
     it('reverts when more than the allowance is substracted', async () => {
-      const { contract, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, acc1 } = await loadFixture(deployUSDXFixture);
       const spender = acc1.address;
       const amount = 1;
 
@@ -1034,7 +1034,7 @@ describe('USDM', () => {
     });
 
     it('emits an approval event', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const spender = acc1.address;
       const amount = 2;
       const subtractedAmount = 1;
@@ -1049,7 +1049,7 @@ describe('USDM', () => {
 
   describe('Transfer From', () => {
     it('does not update allowance amount in case of infinite allowance', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const from = owner.address;
       const to = acc1.address;
 
@@ -1061,7 +1061,7 @@ describe('USDM', () => {
     });
 
     it('transfers the requested amount when has enough allowance', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const from = owner.address;
       const to = acc1.address;
       const amount = 1;
@@ -1076,7 +1076,7 @@ describe('USDM', () => {
     });
 
     it('decreses the spender allowance', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const from = owner.address;
       const to = acc1.address;
 
@@ -1087,7 +1087,7 @@ describe('USDM', () => {
     });
 
     it('reverts when insufficient allowance', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const from = owner.address;
       const to = acc1.address;
       const amount = 1;
@@ -1100,7 +1100,7 @@ describe('USDM', () => {
     });
 
     it('emits a transfer event', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const from = owner.address;
       const to = acc1.address;
       const amount = 1;
@@ -1113,7 +1113,7 @@ describe('USDM', () => {
     });
 
     it('emits an approval event', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const from = owner.address;
       const to = acc1.address;
       const amount = 1;
@@ -1126,7 +1126,7 @@ describe('USDM', () => {
     });
 
     it('reverts when enough allowance but not have enough balance', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const from = owner.address;
       const to = acc1.address;
       const amount = await contract.balanceOf(from);
@@ -1139,7 +1139,7 @@ describe('USDM', () => {
     });
 
     it('decreases allowance by amount of tokens, not by shares', async () => {
-      const { contract, owner, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1 } = await loadFixture(deployUSDXFixture);
       const from = owner.address;
       const to = acc1.address;
       const amount = parseUnits('1');
@@ -1210,12 +1210,12 @@ describe('USDM', () => {
     };
 
     it('initializes nonce at 0', async () => {
-      const { contract, acc1 } = await loadFixture(deployUSDMFixture);
+      const { contract, acc1 } = await loadFixture(deployUSDXFixture);
       expect(await contract.nonces(acc1.address)).to.equal(0);
     });
 
     it('returns the correct domain separator', async () => {
-      const { contract } = await loadFixture(deployUSDMFixture);
+      const { contract } = await loadFixture(deployUSDXFixture);
       const chainId = (await contract.provider.getNetwork()).chainId;
 
       const expected = keccak256(
@@ -1234,7 +1234,7 @@ describe('USDM', () => {
     });
 
     it('accepts owner signature', async () => {
-      const { contract, owner, acc1: spender } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1: spender } = await loadFixture(deployUSDXFixture);
       const value = 100;
       const nonce = await contract.nonces(owner.address);
       const deadline = MaxUint256;
@@ -1250,7 +1250,7 @@ describe('USDM', () => {
     });
 
     it('reverts reused signature', async () => {
-      const { contract, owner, acc1: spender } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1: spender } = await loadFixture(deployUSDXFixture);
       const value = 100;
       const nonce = await contract.nonces(owner.address);
       const deadline = MaxUint256;
@@ -1266,7 +1266,7 @@ describe('USDM', () => {
     });
 
     it('reverts other signature', async () => {
-      const { contract, owner, acc1: spender, acc2: otherAcc } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1: spender, acc2: otherAcc } = await loadFixture(deployUSDXFixture);
       const value = 100;
       const nonce = await contract.nonces(owner.address);
       const deadline = MaxUint256;
@@ -1280,7 +1280,7 @@ describe('USDM', () => {
     });
 
     it('reverts expired permit', async () => {
-      const { contract, owner, acc1: spender } = await loadFixture(deployUSDMFixture);
+      const { contract, owner, acc1: spender } = await loadFixture(deployUSDXFixture);
       const value = 100;
       const nonce = await contract.nonces(owner.address);
       const deadline = await time.latest();

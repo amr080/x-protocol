@@ -11,10 +11,11 @@ import {IERC20MetadataUpgradeable} from "@openzeppelin/contracts-upgradeable/tok
 import {IERC20PermitUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20PermitUpgradeable.sol";
 
 /**
- * @title Mountain Protocol USD Contract
- * @custom:security-contact security@mountainprotocol.com
+ * @title X Protocol USD Contract
+ * @custom:security-contact alex@alexandros-securities.com
+ * @author Alexander Reed, X Financial Technologies
  */
-contract USDM is
+contract USDX is
     IERC20MetadataUpgradeable,
     AccessControlUpgradeable,
     PausableUpgradeable,
@@ -77,14 +78,14 @@ contract USDM is
     // ERC2612 Errors
     error ERC2612ExpiredDeadline(uint256 deadline, uint256 blockTimestamp);
     error ERC2612InvalidSignature(address owner, address spender);
-    // USDM Errors
-    error USDMInvalidMintReceiver(address receiver);
-    error USDMInvalidBurnSender(address sender);
-    error USDMInsufficientBurnBalance(address sender, uint256 shares, uint256 sharesNeeded);
-    error USDMInvalidRewardMultiplier(uint256 rewardMultiplier);
-    error USDMBlockedSender(address sender);
-    error USDMInvalidBlockedAccount(address account);
-    error USDMPausedTransfers();
+    // USDX Errors
+    error USDXInvalidMintReceiver(address receiver);
+    error USDXInvalidBurnSender(address sender);
+    error USDXInsufficientBurnBalance(address sender, uint256 shares, uint256 sharesNeeded);
+    error USDXInvalidRewardMultiplier(uint256 rewardMultiplier);
+    error USDXBlockedSender(address sender);
+    error USDXInvalidBlockedAccount(address account);
+    error USDXPausedTransfers();
 
     /**
      * @notice Initializes the contract.
@@ -219,7 +220,7 @@ contract USDM is
      */
     function _mint(address to, uint256 amount) private {
         if (to == address(0)) {
-            revert USDMInvalidMintReceiver(to);
+            revert USDXInvalidMintReceiver(to);
         }
 
         _beforeTokenTransfer(address(0), to, amount);
@@ -262,7 +263,7 @@ contract USDM is
      */
     function _burn(address account, uint256 amount) private {
         if (account == address(0)) {
-            revert USDMInvalidBurnSender(account);
+            revert USDXInvalidBurnSender(account);
         }
 
         _beforeTokenTransfer(account, address(0), amount);
@@ -271,7 +272,7 @@ contract USDM is
         uint256 accountShares = sharesOf(account);
 
         if (accountShares < shares) {
-            revert USDMInsufficientBurnBalance(account, accountShares, shares);
+            revert USDXInsufficientBurnBalance(account, accountShares, shares);
         }
 
         unchecked {
@@ -311,13 +312,13 @@ contract USDM is
         // Each blocklist check is an SLOAD, which is gas intensive.
         // We only block sender not receiver, so we don't tax every user
         if (isBlocked(from)) {
-            revert USDMBlockedSender(from);
+            revert USDXBlockedSender(from);
         }
         // Useful for scenarios such as preventing trades until the end of an evaluation
         // period, or having an emergency switch for freezing all token transfers in the
         // event of a large bug.
         if (paused()) {
-            revert USDMPausedTransfers();
+            revert USDXPausedTransfers();
         }
     }
 
@@ -405,7 +406,7 @@ contract USDM is
      */
     function _blockAccount(address account) private {
         if (isBlocked(account)) {
-            revert USDMInvalidBlockedAccount(account);
+            revert USDXInvalidBlockedAccount(account);
         }
 
         _blocklist[account] = true;
@@ -418,7 +419,7 @@ contract USDM is
      */
     function _unblockAccount(address account) private {
         if (!isBlocked(account)) {
-            revert USDMInvalidBlockedAccount(account);
+            revert USDXInvalidBlockedAccount(account);
         }
 
         _blocklist[account] = false;
@@ -480,7 +481,7 @@ contract USDM is
      */
     function _setRewardMultiplier(uint256 _rewardMultiplier) private {
         if (_rewardMultiplier < _BASE) {
-            revert USDMInvalidRewardMultiplier(_rewardMultiplier);
+            revert USDXInvalidRewardMultiplier(_rewardMultiplier);
         }
 
         rewardMultiplier = _rewardMultiplier;
@@ -504,7 +505,7 @@ contract USDM is
      */
     function addRewardMultiplier(uint256 _rewardMultiplierIncrement) external onlyRole(ORACLE_ROLE) {
         if (_rewardMultiplierIncrement == 0) {
-            revert USDMInvalidRewardMultiplier(_rewardMultiplierIncrement);
+            revert USDXInvalidRewardMultiplier(_rewardMultiplierIncrement);
         }
 
         _setRewardMultiplier(rewardMultiplier + _rewardMultiplierIncrement);

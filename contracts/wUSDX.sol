@@ -12,9 +12,9 @@ import {IERC20MetadataUpgradeable} from "@openzeppelin/contracts-upgradeable/tok
 import {IERC20PermitUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20PermitUpgradeable.sol";
 
 /**
- * @dev USDM Interface.
+ * @dev USDX Interface.
  */
-interface IUSDM is IERC20MetadataUpgradeable {
+interface IUSDX is IERC20MetadataUpgradeable {
     /**
      * @dev Checks if the specified address is blocked.
      */
@@ -27,10 +27,10 @@ interface IUSDM is IERC20MetadataUpgradeable {
 }
 
 /**
- * @title Wrapped Mountain Protocol USDM
- * @custom:security-contact security@mountainprotocol.com
+ * @title Wrapped X Protocol USDX
+ * @custom:security-contact alex@alexandros-securities.com
  */
-contract wUSDM is
+contract wUSDX is
     ERC4626Upgradeable,
     AccessControlUpgradeable,
     PausableUpgradeable,
@@ -40,7 +40,7 @@ contract wUSDM is
 {
     using CountersUpgradeable for CountersUpgradeable.Counter;
 
-    IUSDM public USDM;
+    IUSDX public USDX;
 
     // Mapping of nonces per address
     mapping(address account => CountersUpgradeable.Counter counter) private _nonces;
@@ -56,9 +56,9 @@ contract wUSDM is
     error ERC2612ExpiredDeadline(uint256 deadline, uint256 blockTimestamp);
     error ERC2612InvalidSignature(address owner, address spender);
 
-    // wUSDM Errors
-    error wUSDMBlockedSender(address sender);
-    error wUSDMPausedTransfers();
+    // wUSDX Errors
+    error wUSDXBlockedSender(address sender);
+    error wUSDXPausedTransfers();
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -66,29 +66,29 @@ contract wUSDM is
     }
 
     /**
-     * @notice Initializes the ERC-4626 USDM Wrapper.
-     * @param _USDM The address of the USDM token to wrap.
+     * @notice Initializes the ERC-4626 USDX Wrapper.
+     * @param _USDX The address of the USDX token to wrap.
      * @param owner The owner address.
      */
-    function initialize(IUSDM _USDM, address owner) external initializer {
-        USDM = _USDM;
+    function initialize(IUSDX _USDX, address owner) external initializer {
+        USDX = _USDX;
 
-        __ERC20_init("Wrapped Mountain Protocol USD", "wUSDM");
-        __ERC4626_init(_USDM);
+        __ERC20_init("Wrapped X Protocol USD", "wUSDX");
+        __ERC4626_init(_USDX);
         __AccessControl_init();
         __Pausable_init();
         __UUPSUpgradeable_init();
-        __EIP712_init("Wrapped Mountain Protocol USD", "1");
+        __EIP712_init("Wrapped X Protocol USD", "1");
 
         _grantRole(DEFAULT_ADMIN_ROLE, owner);
     }
 
     /**
      * @notice We override paused to use the underlying paused state as well.
-     * @return Returns true if USDM or wUSDM is paused, and false otherwise.
+     * @return Returns true if USDX or wUSDX is paused, and false otherwise.
      */
     function paused() public view override returns (bool) {
-        return USDM.paused() || super.paused();
+        return USDX.paused() || super.paused();
     }
 
     /**
@@ -122,15 +122,15 @@ contract wUSDM is
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override {
         // Each blocklist check is an SLOAD, which is gas intensive.
         // We only block sender not receiver, so we don't tax every user
-        if (USDM.isBlocked(from)) {
-            revert wUSDMBlockedSender(from);
+        if (USDX.isBlocked(from)) {
+            revert wUSDXBlockedSender(from);
         }
 
         // Useful for scenarios such as preventing trades until the end of an evaluation
         // period, or having an emergency switch for freezing all token transfers in the
         // event of a large bug.
         if (paused()) {
-            revert wUSDMPausedTransfers();
+            revert wUSDXPausedTransfers();
         }
 
         super._beforeTokenTransfer(from, to, amount);
