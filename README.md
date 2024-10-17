@@ -12,16 +12,6 @@ The wUSDX contract incorporates the ERC-2612 permit functionality, allowing the 
 
 Finally, the wUSDX token transfers can be paused in two ways: either by being paused directly from within the wUSDX contract or in the event the USDX contract is paused.
 
-## Security
-
-The [X Protocol Security Center](https://security.Xprotocol.com) contains more details about the secure development process.
-
-The security policy is detailed in [SECURITY.md](https://github.com/Xprotocol/tokens/blob/main/SECURITY.md), and specifies how you can report security vulnerabilities and which versions will receive security updates. We run a [bug bounty program on Immunefi](https://immunefi.com/bounty/Xprotocol/) to reward the responsible disclosure of vulnerabilities.
-
-## Audits
-
-Audits can be found at https://github.com/Xprotocol/audits.
-
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
