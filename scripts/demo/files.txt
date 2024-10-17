@@ -19,3 +19,13 @@ npx hardhat run scripts/demo4.ts --network localhost		CLI, volatility
 npx hardhat run scripts/demo5.ts --network localhost		token status to menu
 npx hardhat run scripts/demo6.ts --network localhost		yt video
 npx hardhat run scripts/video.ts --network localhost    wUSDX
+
+
+
+
+
+cd C:\Master\Software\demo\x-protocol
+npx hardhat node
+npx hardhat compile
+npx hardhat run scripts/video.ts --network localhost
+
