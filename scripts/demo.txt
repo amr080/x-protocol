@@ -1,0 +1,21 @@
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        10/16/2024   6:44 PM           2261 demo.ts
+-a----        10/16/2024   6:55 PM           2352 demo2.ts
+-a----        10/16/2024   7:16 PM           2802 demo3.ts
+-a----        10/16/2024   8:02 PM           5202 demo4.ts
+-a----        10/16/2024   7:39 PM           5272 demo5.ts
+-a----        10/16/2024   8:08 PM           4737 demo6.ts
+-a----        10/16/2024   6:28 PM           2553 deploy.ts
+-a----        10/16/2024   8:17 PM           4737 video.ts
+
+
+
+
+npx hardhat run scripts/demo.ts --network localhost		  mint, rebase, wrap
+npx hardhat run scripts/demo2.ts --network localhost		mint, rebase, wrap, FOBXX
+npx hardhat run scripts/demo3.ts --network localhost		mint, rebase, wrap, FOBXX, NAV
+npx hardhat run scripts/demo4.ts --network localhost		CLI, volatility
+npx hardhat run scripts/demo5.ts --network localhost		token status to menu
+npx hardhat run scripts/demo6.ts --network localhost		yt video
+npx hardhat run scripts/video.ts --network localhost    wUSDX
