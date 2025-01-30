@@ -6,11 +6,11 @@ X Protocol hosts the primary market that establishes the price peg. KYC-verified
 
 [USDX](https://github.com/x-protocol/tokens#USDX) is a rebasing ERC-20 token with a set of additional features, including pausing, blocking/unblocking accounts, role-based access control, and upgradability. The contract’s primary objective is to reflect the T-bills’ annual percentage yield (APY) within the token’s value. It achieves this through a reward multiplier rebasing mechanism, where the addRewardMultiplier function is called daily to adjust the reward multiplier, guaranteeing an accurate representation of yield from the underlying assets.
 
-Acknowledging the complexities of handling rebasing tokens in the DeFi ecosystem, the [wUSDX](https://github.com/x-protocol/tokens#wUSDX) contract serves as a wrapped token, simplifying integration while preserving stability. The wUSDX contract is an ERC-462 token vault, enabling users to deposit USDX in exchange for wUSDX tokens. The USDX tokens are rebasing, whereas the wUSDX tokens are non-rebasing, making wUSDX ideal for seamless integration with protocols in the DeFi ecosystem.
+Acknowledging the complexities of handling rebasing tokens in the DeFi ecosystem, the [USDXW](https://github.com/x-protocol/tokens#USDXW) contract serves as a wrapped token, simplifying integration while preserving stability. The USDXW contract is an ERC-462 token vault, enabling users to deposit USDX in exchange for USDXW tokens. The USDX tokens are rebasing, whereas the USDXW tokens are non-rebasing, making USDXW ideal for seamless integration with protocols in the DeFi ecosystem.
 
-The wUSDX contract incorporates the ERC-2612 permit functionality, allowing the use of signatures to grant token allowances. Additionally, the close relationship between the wUSDX and USDX contracts is also worth noting; the wUSDX contract leverages the account block list from the USDX contract to govern transfers and, specifically, prevent transfers from accounts included in the block list.
+The USDXW contract incorporates the ERC-2612 permit functionality, allowing the use of signatures to grant token allowances. Additionally, the close relationship between the USDXW and USDX contracts is also worth noting; the USDXW contract leverages the account block list from the USDX contract to govern transfers and, specifically, prevent transfers from accounts included in the block list.
 
-Finally, the wUSDX token transfers can be paused in two ways: either by being paused directly from within the wUSDX contract or in the event the USDX contract is paused.
+Finally, the USDXW token transfers can be paused in two ways: either by being paused directly from within the USDXW contract or in the event the USDX contract is paused.
 
 ## Contributing
 
@@ -167,14 +167,14 @@ npx hardhat help
 - `UPGRADE_ROLE`: Grants the ability to upgrade the contract.
 - `PAUSE_ROLE`: Grants the ability to pause/unpause the contract.
 
-### wUSDX
+### USDXW
 
 #### Public and External Functions
 
 - `initialize(IUSDX _USDX, address owner)`: Initializes the contract.
 - `pause()`: Pauses the contract, halting token transfers.
 - `unpause()`: Unpauses the contract, allowing token transfers.
-- `paused()`: Returns true if USDX or wUSDX is paused, and false otherwise.
+- `paused()`: Returns true if USDX or USDXW is paused, and false otherwise.
 - `DOMAIN_SEPARATOR()`: Returns the EIP-712 domain separator.
 - `nonces(address owner)`: Returns the nonce for the specified address.
 - `permit(address owner, address spender, uint256 value, uint256 deadline, uint8 v, bytes32 r, bytes32 s)`: Implements EIP-2612 permit functionality.
@@ -208,8 +208,8 @@ npx hardhat help
 <tbody>
 <tr><td style="border-color:inherit;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:top;word-break:normal">USDX</td><td style="border-color:inherit;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:top;word-break:normal">Implementation<br><a href="https://sepolia.etherscan.io/address/0x00232a7793ca38320a12893c53547543c79546b8" target="_blank" rel="noopener noreferrer">0x00232a7793CA38320A12893c53547543C79546b8</a><br><br>Proxy<br><a href="https://sepolia.etherscan.io/address/0x81536233C3FfaEa0198D7B5Ce8dEceDf3C520A66" target="_blank" rel="noopener noreferrer">0x81536233C3FfaEa0198D7B5Ce8dEceDf3C520A66</a></td>
 <td style="border-color:inherit;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:top;word-break:normal"><a href="https://github.com/amr080/x-protocol/blob/main/contracts/USDX.sol" target="_blank" rel="noopener noreferrer">Github</a></td><td style="border-color:inherit;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:top;word-break:normal">Rebasing<br>ERC-20</td></tr>
-<tr><td style="border-color:inherit;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:top;word-break:normal">wUSDX</td><td style="background-color:#FFF;border-color:inherit;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:top;word-break:normal">Implementation<br><a href="https://sepolia.etherscan.io/address/0xfa52c849f1d5ec11d83a48281b9368856a16f1e0" target="_blank" rel="noopener noreferrer">0xfA52C849F1d5EC11D83a48281b9368856A16f1e0</a><br><br>Proxy<br><a href="https://sepolia.etherscan.io/address/0xDB45A2137EfdfBe8a1F4EaDCCda8b56990B22361" target="_blank" rel="noopener noreferrer">0xDB45A2137EfdfBe8a1F4EaDCCda8b56990B2236</a></td>
-<td style="border-color:inherit;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:top;word-break:normal"><a href="https://github.com/amr080/x-protocol/blob/main/contracts/wUSDX.sol" target="_blank" rel="noopener noreferrer">Github</a></td><td style="border-color:inherit;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:top;word-break:normal">Accumulating<br>ERC-4626</td></tr>
+<tr><td style="border-color:inherit;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:top;word-break:normal">USDXW</td><td style="background-color:#FFF;border-color:inherit;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:top;word-break:normal">Implementation<br><a href="https://sepolia.etherscan.io/address/0xfa52c849f1d5ec11d83a48281b9368856a16f1e0" target="_blank" rel="noopener noreferrer">0xfA52C849F1d5EC11D83a48281b9368856A16f1e0</a><br><br>Proxy<br><a href="https://sepolia.etherscan.io/address/0xDB45A2137EfdfBe8a1F4EaDCCda8b56990B22361" target="_blank" rel="noopener noreferrer">0xDB45A2137EfdfBe8a1F4EaDCCda8b56990B2236</a></td>
+<td style="border-color:inherit;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:top;word-break:normal"><a href="https://github.com/amr080/x-protocol/blob/main/contracts/USDXW.sol" target="_blank" rel="noopener noreferrer">Github</a></td><td style="border-color:inherit;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;text-align:left;vertical-align:top;word-break:normal">Accumulating<br>ERC-4626</td></tr>
 </tbody></table>
 
 
