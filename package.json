@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mountainprotocol/tokens.git"
+    "url": "git+https://github.com/*****"
   },
-  "author": "Mati <mattiascaricato@gmail.com>",
+  "author": "*****",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mountainprotocol/tokens/issues"
+    "url": "https://github.com/*****"
   },
-  "homepage": "https://github.com/mountainprotocol/tokens#readme",
+  "homepage": "https://github.com/*****",
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.6",
     "@nomicfoundation/hardhat-toolbox": "^2.0.1",
