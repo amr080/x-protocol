@@ -1,0 +1,116 @@
+openapi: 3.0.0
+info:
+  title: XFT API
+  version: "1.0.0"
+paths:
+  /v1/{token}/mint:
+    post:
+      operationId: mintUSDX
+      summary: Mint USDX tokens from USD deposit
+      description: Convert USD deposit to USDX tokens.
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+          description: Token type (e.g., USDX)
+          example: USDX
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                wallet_address:
+                  type: string
+                  description: Wallet address.
+                  example: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
+                amount:
+                  type: number
+                  description: USD deposit amount.
+                  example: 5000.00
+              required:
+                - wallet_address
+                - amount
+      responses:
+        '200':
+          description: Minting successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  txn_id:
+                    type: string
+                    description: Unique transaction ID.
+                    example: "tx_a7f8e9d2c5b3"
+                  wallet_address:
+                    type: string
+                    description: Wallet address.
+                    example: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e"
+                  amount:
+                    type: number
+                    description: USD deposit amount.
+                    example: 5000.00
+                  shares:
+                    type: integer
+                    description: Credited shares.
+                    example: 5000000000000000000000
+                  token_amount:
+                    type: number
+                    description: Minted token amount.
+                    example: 5000.00
+                  multiplier:
+                    type: integer
+                    description: Current multiplier.
+                    example: 1000000000000000000
+                required:
+                  - txn_id
+                  - wallet_address
+                  - amount
+                  - shares
+                  - token_amount
+                  - multiplier
+        '400':
+          description: Bad Request - Invalid input parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid input"
+                  message:
+                    type: string
+                    example: "Wallet address is required."
+        '401':
+          description: Unauthorized - Authentication required.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Unauthorized"
+                  message:
+                    type: string
+                    example: "Authentication credentials were missing or invalid."
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Server error"
+                  message:
+                    type: string
+                    example: "An unexpected error occurred."
+      tags:
+        - Mint
