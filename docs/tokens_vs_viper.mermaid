@@ -2,7 +2,7 @@ flowchart TD
     %% Subgraph for Blockchain
     subgraph Blockchain["Blockchain"]
         direction LR
-        InvestorA["Investor A"] --- InvestorB["Investor B"] --- Walmart["Walmart"]
+            InvestorA["Investor A"] <--> |Tokens| InvestorB["Investor B"] <--> |Tokens| Walmart["Walmart"]
     end
 
     %% Investment Company outside the subgraph
@@ -12,8 +12,3 @@ flowchart TD
     InvestmentCo <-->|Tokens/USD| InvestorA
     InvestmentCo <-->|Tokens/USD| InvestorB
     InvestmentCo <-->|Tokens/USD| Walmart
-
-    InvestorA <-->|Tokens/USD| InvestorB
-    InvestorA <-->|Tokens/USD| Walmart
-    InvestorB <-->|Tokens/USD| Walmart
-
