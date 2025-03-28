@@ -1,0 +1,19 @@
+flowchart TD
+    %% Subgraph for Blockchain
+    subgraph Blockchain["Blockchain"]
+        direction LR
+        InvestorA["Investor A"] --- InvestorB["Investor B"] --- Walmart["Walmart"]
+    end
+
+    %% Investment Company outside the subgraph
+    InvestmentCo["Investment Company"]
+
+    %% Bidirectional Arrows with Improved Formatting
+    InvestmentCo <-->|Tokens/USD| InvestorA
+    InvestmentCo <-->|Tokens/USD| InvestorB
+    InvestmentCo <-->|Tokens/USD| Walmart
+
+    InvestorA <-->|Tokens/USD| InvestorB
+    InvestorA <-->|Tokens/USD| Walmart
+    InvestorB <-->|Tokens/USD| Walmart
+
